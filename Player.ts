@@ -1,4 +1,5 @@
 import { Direction } from "./Direction.js";
+import { Hole } from "./Hole.js";
 import { Point } from "./Point.js";
 import { Shape } from "./Shape.js";
 
@@ -11,14 +12,6 @@ export class Player extends Point {
         if( this.x < 0 || this.x >= width || this.y < 0 || this.y >= height ) return true;
         
         return false;
-    }
-
-    public touchRock(rock: Point): boolean{
-        return this.touch(rock);
-    }
-
-    public touchHole(hole: Point): boolean{
-        return this.touch(hole);
     }
 
     public move(dir: Direction, w: number, h: number): void {
@@ -54,9 +47,26 @@ export class Player extends Point {
                 }
                 break;
         }
-
         
         // console.log(this.x, this.y, isCollide);
-        
     }    
+
+    public touchHole(dir: Direction, hole: Hole): void {
+        let isFilled: boolean = hole.getIsFilled();
+        
+        switch (dir) {
+            case 0:
+                this.y = hole.getY() + 1;
+                break;
+            case 1:
+                this.y = hole.getY() - 1;
+                break;
+            case 2:
+                this.x = hole.getX() + 1;
+                break;
+            case 3:
+                this.x = hole.getX() - 1;
+                break;
+        }
+    } 
 }

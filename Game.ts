@@ -107,17 +107,18 @@ export class Game{
 
     public run(): void {
         this.player.move(this.dir, this.width - 1, this.height - 1);
-        this.display.draw(this);
         
         for(let object of this.objects) {
-            if (object instanceof Hole && this.player.touch(object)) {
-                console.log('found hole');
+            if (object instanceof Hole && this.player.touch(object) && !object.getIsFilled()) {
+                this.player.touchHole(this.dir, object);
             }
 
             if (object instanceof Rock && this.player.touch(object)) {
                 console.log('found rock');
             }
         }
+
+        this.display.draw(this);
     }
 
 }
