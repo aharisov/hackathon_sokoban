@@ -23,7 +23,7 @@ export class Display{
         // draw rocks and holes
         for (let object of game.getObjects()) {
             if (object instanceof Hole && object.getIsFilled()) {
-                this.drawer.drawRectangle(object.getX(), object.getY(), 'grey'); 
+                this.drawer.drawRectangle(object.getX(), object.getY(), 'green'); 
             } else {
                 this.drawer.drawRectangle(object.getX(), object.getY(), object.getColor()) 
             }

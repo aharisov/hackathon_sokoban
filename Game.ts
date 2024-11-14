@@ -106,20 +106,30 @@ export class Game{
         let rocks: Rock[] = this.objects.filter(obj => obj instanceof Rock);
 
         for(let hole of holes) {
+            // restrict go through the hole
             if (!hole.getIsFilled() && this.player.touch(hole)) {
                 this.player.touchHole(this.dir, hole);
             }
         }
 
         for(let rock of rocks) {
+            // move rock by player
             if (this.player.touch(rock)) {
                 rock.move(this.dir, this.width, this.height);
             }
 
+            // fill the hole
             for(let hole of holes) {
-                if (rock.touch(hole)) {
+                if (rock.touch(hole) && !hole.getIsFilled()) {
                     hole.setIsFilled();
                     this.objects = this.objects.filter(obj => obj != rock);
+                }
+            }
+
+            // move several rocks
+            for(let rock2 of rocks) {
+                if (rock.touch(rock2) && rock != rock2) {
+                    rock2.move(this.dir, this.width, this.height);
                 }
             }
         }
@@ -141,13 +151,11 @@ export class Game{
         this.checkObjects();
         
         this.display.draw(this);
-
+        
         if (this.isLevelFinished()) {
-            setTimeout(() => {
-                this.level++;
-                this.objects = [];
-                this.generateObjects();
-            }, 2000);
+            this.level++;
+            this.objects = [];
+            this.generateObjects();
         }
     }
 

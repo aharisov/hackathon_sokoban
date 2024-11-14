@@ -45,6 +45,8 @@ export class Point {
     }
 
     public collide(width: number, height: number): boolean {
+        console.log('collide', this.x, this.y);
+        
         if( this.x < 0 || this.x >= width || this.y < 0 || this.y >= height ) return true;
         
         return false;
@@ -83,5 +85,8 @@ export class Point {
                 }
                 break;
         }
+
+        console.log(this.x, this.y, isCollide);
+        
     }
 }
