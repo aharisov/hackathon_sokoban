@@ -1,10 +1,11 @@
+import { Direction } from "./Direction";
 import { Shape } from "./Shape";
 
 export class Point {
-    x: number;
-    y: number;
-    color: string;
-    shape: Shape;
+    protected x: number;
+    protected y: number;
+    protected color: string;
+    protected shape: Shape;
 
     constructor(x: number, y: number, color: string, shape: Shape) {
         this.x = x;
@@ -29,8 +30,9 @@ export class Point {
         return this.shape;
     }
 
-    public touch(other_point:Point): boolean {
-        if(other_point == this) return false;
-        return this.x == other_point.getX() && this.y == other_point.getY();
+    public touch(otherPoint:Point): boolean {
+        if(otherPoint == this) return false;
+
+        return this.x == otherPoint.getX() && this.y == otherPoint.getY();
     }
 }

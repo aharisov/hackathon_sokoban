@@ -1,5 +1,5 @@
-import { Point } from "./Point";
-import { Shape } from "./Shape";
+import { Point } from "./Point.js";
+import { Shape } from "./Shape.js";
 
 export class Hole extends Point {
     protected isFilled: boolean;
