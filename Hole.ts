@@ -13,4 +13,8 @@ export class Hole extends Point {
     public getIsFilled(): boolean {
         return this.isFilled;
     }
+
+    public setIsFilled(): void {
+        this.isFilled = true;
+    }
 }

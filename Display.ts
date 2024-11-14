@@ -1,5 +1,6 @@
 import Drawer from "./Drawer.js";
 import { Game } from "./Game.js";
+import { Hole } from "./Hole.js";
 import { Player } from "./Player.js";
 
 
@@ -10,17 +11,25 @@ export class Display{
         this.drawer = new Drawer(width,height,scale)
     }
   
-    public refreshScore(){
+    public refreshScore(game: Game){
         let score : HTMLElement|null = document.getElementById("score");
-        if(score!=null) score.innerHTML = "0";
+        if(score!=null) score.innerHTML = game.getLevel().toString();
     }
   
     public draw(game:Game):void {
+        // clear field
         this.drawer.clear();
-        this.drawer.drawCircle(game.getPlayer().getX(), game.getPlayer().getY(), game.getPlayer().getColor());
         
+        // draw rocks and holes
         for (let object of game.getObjects()) {
-            this.drawer.drawRectangle(object.getX(), object.getY(), object.getColor()) 
+            if (object instanceof Hole && object.getIsFilled()) {
+                this.drawer.drawRectangle(object.getX(), object.getY(), 'grey'); 
+            } else {
+                this.drawer.drawRectangle(object.getX(), object.getY(), object.getColor()) 
+            }
         }
+
+        // draw player
+        this.drawer.drawCircle(game.getPlayer().getX(), game.getPlayer().getY(), game.getPlayer().getColor());
     }        
 }

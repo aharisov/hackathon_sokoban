@@ -14,7 +14,6 @@ export class Game{
     private level: number;
     private player: Player;
     private objects: Point[];
-    private holes: Hole[];
     private dir: Direction;
     
     constructor(width:number, height:number, scale:number) {
@@ -24,18 +23,13 @@ export class Game{
         this.level = 1;
         this.player = new Player(this.randomX(), this.randomY(), 'red', Shape.RECTANGLE);
         this.objects = [];
-        this.holes = [];
         this.dir = Direction.RIGHT;
         this.generateObjects();
         this.display.draw(this);
     }
 
-    public getWidth(): number {
-        return this.width;
-    }
-
-    public getHeight(): number {
-        return this.height;
+    public getLevel(): number {
+        return this.level;
     }
 
     public getObjects(): Point[] {
@@ -61,8 +55,10 @@ export class Game{
             let rock: Rock = new Rock(this.randomX(), this.randomY(), 'blue', Shape.CIRCLE);
             let hole: Hole = new Hole(this.randomX(), this.randomY(), 'black', Shape.CIRCLE);
             
-            if (rock.touch(hole)) {
+            if (rock.touch(hole) || rock.getX() == 0 || rock.getX() == this.width - 1 
+                || rock.getY() == 0 || rock.getY() == this.height - 1) {
                 rock = new Rock(this.randomX(), this.randomY(), 'blue', Shape.CIRCLE);
+                hole = new Hole(this.randomX(), this.randomY(), 'black', Shape.CIRCLE);
             }
 
             for (let object of this.objects) {
@@ -105,20 +101,54 @@ export class Game{
         });
     }
 
-    public run(): void {
-        this.player.move(this.dir, this.width - 1, this.height - 1);
-        
-        for(let object of this.objects) {
-            if (object instanceof Hole && this.player.touch(object) && !object.getIsFilled()) {
-                this.player.touchHole(this.dir, object);
-            }
+    private checkObjects(): void {
+        let holes: Hole[] = this.objects.filter(obj => obj instanceof Hole);
+        let rocks: Rock[] = this.objects.filter(obj => obj instanceof Rock);
 
-            if (object instanceof Rock && this.player.touch(object)) {
-                console.log('found rock');
+        for(let hole of holes) {
+            if (!hole.getIsFilled() && this.player.touch(hole)) {
+                this.player.touchHole(this.dir, hole);
             }
         }
 
+        for(let rock of rocks) {
+            if (this.player.touch(rock)) {
+                rock.move(this.dir, this.width, this.height);
+            }
+
+            for(let hole of holes) {
+                if (rock.touch(hole)) {
+                    hole.setIsFilled();
+                    this.objects = this.objects.filter(obj => obj != rock);
+                }
+            }
+        }
+    }
+
+    private isLevelFinished(): boolean {
+        let rocks: Rock[] = this.objects.filter(obj => obj instanceof Rock);
+
+        if (rocks.length == 0) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public run(): void {
+        this.display.refreshScore(this);
+        this.player.move(this.dir, this.width - 1, this.height - 1);
+        this.checkObjects();
+        
         this.display.draw(this);
+
+        if (this.isLevelFinished()) {
+            setTimeout(() => {
+                this.level++;
+                this.objects = [];
+                this.generateObjects();
+            }, 2000);
+        }
     }
 
 }

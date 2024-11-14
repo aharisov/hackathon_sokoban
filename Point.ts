@@ -22,6 +22,14 @@ export class Point {
         return this.y;
     }
 
+    public setX(x: number): void {
+        this.x = x;
+    }
+
+    public setY(y: number): void {
+        this.y = y;
+    }
+
     public getColor(): string {
         return this.color;
     }
@@ -34,5 +42,46 @@ export class Point {
         if(otherPoint == this) return false;
 
         return this.x == otherPoint.getX() && this.y == otherPoint.getY();
+    }
+
+    public collide(width: number, height: number): boolean {
+        if( this.x < 0 || this.x >= width || this.y < 0 || this.y >= height ) return true;
+        
+        return false;
+    }
+
+    public move(dir: Direction, w: number, h: number): void {
+        let isCollide: boolean = this.collide(w, h);
+        
+        switch (dir) {
+            case 0:
+                if (isCollide) {
+                    this.y >= h ? this.y-- : this.y = 0;
+                } else {
+                    this.y <= 0 ? this.y = 0 : this.y--;
+                }
+                break;
+            case 1:
+                if (isCollide) {
+                    this.y <= 0 ? this.y++ : this.y = h;
+                } else {
+                    this.y++;
+                }
+                break;
+            case 2:
+                if (isCollide) {
+                    this.x >= w ? this.x-- : this.x = 0;
+                } else {
+                    this.x <= 0 ? this.x = 0 : this.x--;
+                }
+                break;
+            case 3:
+                if (isCollide) {
+                    this.x <= 0 ? this.x++ : this.x = w;
+                } else {
+                    this.x++;
+                }
+                break;
+        }
     }
 }
