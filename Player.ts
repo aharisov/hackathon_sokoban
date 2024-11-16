@@ -10,16 +10,16 @@ export class Player extends Point {
 
     public touchHole(dir: Direction, hole: Hole): void {
         switch (dir) {
-            case 0:
+            case Direction.UP:
                 this.y = hole.getY() + 1;
                 break;
-            case 1:
+            case Direction.DOWN:
                 this.y = hole.getY() - 1;
                 break;
-            case 2:
+            case Direction.LEFT:
                 this.x = hole.getX() + 1;
                 break;
-            case 3:
+            case Direction.RIGHT:
                 this.x = hole.getX() - 1;
                 break;
         }
