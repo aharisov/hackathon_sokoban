@@ -55,12 +55,14 @@ export class Game{
             let rock: Rock = new Rock(this.randomX(), this.randomY(), 'blue', Shape.CIRCLE);
             let hole: Hole = new Hole(this.randomX(), this.randomY(), 'black', Shape.CIRCLE);
             
+            // recreate rocks and holes to avoid rock placement near the walls
             if (rock.touch(hole) || rock.getX() == 0 || rock.getX() == this.width - 1 
                 || rock.getY() == 0 || rock.getY() == this.height - 1) {
                 rock = new Rock(this.randomX(), this.randomY(), 'blue', Shape.CIRCLE);
                 hole = new Hole(this.randomX(), this.randomY(), 'black', Shape.CIRCLE);
             }
 
+            // recreate rocks and holes if there are objects with the same cordinates
             for (let object of this.objects) {
                 if (object.touch(rock)) {
                     rock = new Rock(this.randomX(), this.randomY(), 'blue', Shape.CIRCLE);
@@ -101,37 +103,35 @@ export class Game{
         });
     }
 
-    private checkObjects(): void {
+    private onHoleTouch(actor: Player | Rock): void {
         let holes: Hole[] = this.objects.filter(obj => obj instanceof Hole);
-        let rocks: Rock[] = this.objects.filter(obj => obj instanceof Rock);
-
+        
         for(let hole of holes) {
-            // restrict go through the hole
-            if (!hole.getIsFilled() && this.player.touch(hole)) {
-                this.player.touchHole(this.dir, hole);
+            if (!hole.getIsFilled()) {
+                // restrict Player go through the hole
+                if (actor instanceof Player && actor.touch(hole)) {
+                    this.player.touchHole(this.dir, hole);
+                }
+
+                // fill the hole by the rock
+                if (actor instanceof Rock && actor.touch(hole)) {
+                    hole.setIsFilled();
+                    this.objects = this.objects.filter(obj => obj != actor);
+                }
             }
         }
+    }
+
+    private onRockTouch(actor: Player | Rock): void {
+        let rocks: Rock[] = this.objects.filter(obj => obj instanceof Rock);
 
         for(let rock of rocks) {
-            // move rock by player
-            if (this.player.touch(rock)) {
+            // move one or multiple rocks
+            if (actor.touch(rock)) {
                 rock.move(this.dir, this.width, this.height);
-            }
-
-            // fill the hole
-            for(let hole of holes) {
-                if (rock.touch(hole) && !hole.getIsFilled()) {
-                    hole.setIsFilled();
-                    this.objects = this.objects.filter(obj => obj != rock);
-                }
-            }
-
-            // move several rocks
-            for(let rock2 of rocks) {
-                if (rock.touch(rock2) && rock != rock2) {
-                    rock2.move(this.dir, this.width, this.height);
-                }
-            }
+                this.onHoleTouch(rock);
+                this.onRockTouch(rock);
+            }            
         }
     }
 
@@ -148,7 +148,8 @@ export class Game{
     public run(): void {
         this.display.refreshScore(this);
         this.player.move(this.dir, this.width - 1, this.height - 1);
-        this.checkObjects();
+        this.onHoleTouch(this.player);
+        this.onRockTouch(this.player);
         
         this.display.draw(this);
         

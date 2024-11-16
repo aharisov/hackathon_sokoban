@@ -2,6 +2,7 @@ import Drawer from "./Drawer.js";
 import { Game } from "./Game.js";
 import { Hole } from "./Hole.js";
 import { Player } from "./Player.js";
+import { Rock } from "./Rock.js";
 
 
 export class Display{
@@ -21,12 +22,19 @@ export class Display{
         this.drawer.clear();
         
         // draw rocks and holes
-        for (let object of game.getObjects()) {
-            if (object instanceof Hole && object.getIsFilled()) {
-                this.drawer.drawRectangle(object.getX(), object.getY(), 'green'); 
+        let holes: Hole[] = game.getObjects().filter(obj => obj instanceof Hole);
+        let rocks: Rock[] = game.getObjects().filter(obj => obj instanceof Rock);
+
+        for (let hole of holes) {
+            if (hole.getIsFilled()) {
+                this.drawer.drawRectangle(hole.getX(), hole.getY(), 'green'); 
             } else {
-                this.drawer.drawRectangle(object.getX(), object.getY(), object.getColor()) 
-            }
+                this.drawer.drawRectangle(hole.getX(), hole.getY(), hole.getColor());
+            } 
+        }
+
+        for (let rock of rocks) {
+            this.drawer.drawRectangle(rock.getX(), rock.getY(), rock.getColor());
         }
 
         // draw player
